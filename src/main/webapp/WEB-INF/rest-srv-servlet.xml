@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xmlns:aop="http://www.springframework.org/schema/aop"
+     xmlns:tx="http://www.springframework.org/schema/tx"
+     xmlns:context="http://www.springframework.org/schema/context"
+     xmlns:mvc="http://www.springframework.org/schema/mvc"
+     xsi:schemaLocation="
+     http://www.springframework.org/schema/mvc
+     http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+     http://www.springframework.org/schema/beans 
+     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+     http://www.springframework.org/schema/tx 
+     http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+     http://www.springframework.org/schema/aop 
+     http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+     http://www.springframework.org/schema/context
+     http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+ 
+	<mvc:annotation-driven />
+	<context:component-scan base-package="om.edu.squ.squportal.basic.rest.controller" />
+	<context:component-scan base-package="om.edu.squ.squportal.basic.rest.dao.db" />
+	<context:component-scan base-package="om.edu.squ.squportal.basic.rest.dao.service" />
+	
+	<!-- Configure to plugin JSON as request and response in method handler -->
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+        <property name="messageConverters">
+            <list>
+                <ref bean="jsonMessageConverter"/>
+            </list>
+        </property>
+    </bean>
+     
+    <!-- Configure bean to convert JSON to POJO and vice versa -->
+    <bean id="jsonMessageConverter" class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter"/>
+	
+   	<bean id="queryProps" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+    	<property name="locations" value="classpath:sql/query.xml" />
+	</bean>
+    	 
+	<!-- DataBase Access - HRFMS Database (pooled connection from the application server)-->
+ 
+	 <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+    	<property name="jndiName" value="java:comp/env/jdbc/pool/wireless"/>
+	 </bean>
+	 
+	<bean id="namedParameterJdbcTemplate" class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">  
+		<constructor-arg ref="dataSource"></constructor-arg>  
+	</bean>
+ 
+	<bean id="basicDbDao"	class="om.edu.squ.squportal.basic.rest.dao.db.BasicDbImpl">
+ 		<property name="namedParameterJdbcTemplate" ref="namedParameterJdbcTemplate"/> 
+		<property name="queryProps" ref="queryProps" />
+	</bean>
+
+	<bean id="basicServiceDao"	class="om.edu.squ.squportal.basic.rest.dao.service.BasicServiceImpl"/>
+
+
+</beans>

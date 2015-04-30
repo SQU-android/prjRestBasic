@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<entry key="user.detail">
+		SELECT 
+		    USER_NAME AS USER_NAME, 
+  			USER_TYPE AS USER_TYPE, 
+  			USER_ID AS USER_ID
+		FROM 
+	  		WIRELESS_REG_USER
+		WHERE
+	  		UPPER(PHYSICAL_ADDRESS)=UPPER(:paramMacAdd)
+	  		AND ROWNUM = 1
+	</entry>
+</properties>
